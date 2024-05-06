@@ -42,7 +42,7 @@ komoran api를 활용한 형태소 분석을 통한 리뷰 필터링 기능입�
 ![](images/위치api.png)
 
 ### 4.2. komoran api
-![](images/komoran api.png)
+![](images/komoranApi.png)
 
 </div>
 </details>

@@ -39,10 +39,10 @@ komoran api를 활용한 형태소 분석을 통한 리뷰 필터링 기능입�
 <div markdown="1">
 
 ### 4.1. 위치 api
-![](https://zuminternet.github.io/images/portal/post/2019-04-22-ZUM-Pilot-integer/flow1.png)
+![](images/위치api.png)
 
 ### 4.2. komoran api
-![](https://zuminternet.github.io/images/portal/post/2019-04-22-ZUM-Pilot-integer/flow_vue.png)
+![](images/komoran api.png)
 
 </div>
 </details>

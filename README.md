@@ -55,13 +55,13 @@ komoran api를 활용한 형태소 분석을 통한 리뷰 필터링 기능입�
 ![](images/cart.png)
 
 ### 5.2 주문(kakaopay api)
-![](images/order.png)
+![](images/order1.png)
 
 ### 5.3 주문내역
-![](images/orders.png)
+![](images/orders1.png)
 
 ### 5.4 주문 상세내역
-![](images/orderDetail.png)
+![](images/orderDetail1.png)
 
 </br>
 

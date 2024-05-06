@@ -67,196 +67,64 @@ komoran api를 활용한 형태소 분석을 통한 리뷰 필터링 기능입�
 
 ## 6. 그 외 트러블 슈팅
 <details>
-<summary>npm run dev 실행 오류</summary>
+<summary>Mysql 설치 오류</summary>
 <div markdown="1">
 
-- Webpack-dev-server 버전을 3.0.0으로 다운그레이드로 해결
-- `$ npm install —save-dev webpack-dev-server@3.0.0`
+- 팀원 한명 한글 계정으로 mysql 설치가 안되는 오류 발생
+- 남는 pc를 통합 db로 사용
+- 외부접속 허용계정 생성 후 공유기 포트포워딩으로 mysql포트 열고 외부 ip주소로 접속해서 통합 db로 해결 서버화
 
 </div>
 </details>
 
 <details>
-<summary>vue-devtools 크롬익스텐션 인식 오류 문제</summary>
+<summary>thmeleaf ncp 배포시에 뷰 경로 못찾는 이슈</summary>
 <div markdown="1">
   
-  - main.js 파일에 `Vue.config.devtools = true` 추가로 해결
-  - [https://github.com/vuejs/vue-devtools/issues/190](https://github.com/vuejs/vue-devtools/issues/190)
+  - return "/~/~"; 로 작성시에 properties에서 classpath /를 제거하거나 return 에서 /를 제거 중복되면 경로를 못찾음
   
 </div>
 </details>
 
 <details>
-<summary>ElementUI input 박스에서 `v-on:keyup.enter="메소드명"`이 정상 작동 안하는 문제</summary>
+<summary>Mybatis sql 문 대소문자 구분 문제</summary>
 <div markdown="1">
   
-  - `v-on:keyup.enter.native=""` 와 같이 .native 추가로 해결
+  - ncp 배포 시에 db가 우분투 5.7버전 mysql이라 기본 설정이 대소문자 구분임
+  - 대소문자 구분해서 작성하거나 설정을 바꿔주면 해결
   
 </div>
 </details>
 
 <details>
-<summary> Post 목록 출력시에 Member 객체 출력 에러 </summary>
+<summary>Https 문제</summary>
 <div markdown="1">
   
-  - 에러 메세지(500에러)
-    - No serializer found for class org.hibernate.proxy.pojo.javassist.JavassistLazyInitializer and no properties discovered to create BeanSerializer (to avoid exception, disable SerializationConfig.SerializationFeature.FAIL_ON_EMPTY_BEANS)
-  - 해결
-    - Post 엔티티에 @ManyToOne 연관관계 매핑을 LAZY 옵션에서 기본(EAGER)옵션으로 수정
+  - ssl 인증서가 있어야 https로 접속이 가능한것을 알고 aws ec2로 개인 우분투 서버를 생성후 nginx를 활용해 ssl 인증서를 적용해서 https 접속 성공
+  - 하지만 이미지 경로를 절대경로로 설정하지 않아 이미지가 안나오고 css도 적용되지 않았다
+  - 페이지 이동도 되지 않아 추후 공부를 통해 오류를 해결할 생각이다.
+  
+</div>
+</details>
+
+<details>
+<summary> jpa n+1 문제 </summary>
+<div markdown="1">
+  
+  - jpa에는 가장 흔한 문제로 n+1 문제가 있다 1개의 쿼리를 보내는데 해당 엔티티의 연관관계맵핑이된 객체의 쿼리문까지 같이 보내는 문제이다 사실은 1+n 문제라고 할수 있따 우리는 초반 이 걱정을 하였지만
+  - 데이터가 많을때 성능 저하의 원인이라는것을 보고 우리는 아직 데이터가 많지 않으니 일단 개발을 서두르고 시간이 남으면 해결하기로 하였다 .
+  - 해결방안으로 @onetoOne @ManytoOne 에서 발생하는데 지연로딩으로 설정해주면 처음 select 쿼리를 보낼때 참조 엔티티는 프록시로 가져오게 할수 있다 그러면 select 문이 처음에 1개만 나가게 되고
+  - 참조 엔티티는 select 쿼리문은 그 객체를 참조해서 객체안의 요소를 getter 로 가져올때 나가게 된다 그러면 n+1문제를 해결할수 있다
+  - 더 많은 성능 개선 방법들이 있지만 지금은 여기까지알고 있다 더 공부하고 있다
   
 </div>
 </details>
     
-<details>
-<summary> 프로젝트를 git init으로 생성 후 발생하는 npm run dev/build 오류 문제 </summary>
-<div markdown="1">
-  
-  ```jsx
-    $ npm run dev
-    npm ERR! path C:\Users\integer\IdeaProjects\pilot\package.json
-    npm ERR! code ENOENT
-    npm ERR! errno -4058
-    npm ERR! syscall open
-    npm ERR! enoent ENOENT: no such file or directory, open 'C:\Users\integer\IdeaProjects\pilot\package.json'
-    npm ERR! enoent This is related to npm not being able to find a file.
-    npm ERR! enoent
 
-    npm ERR! A complete log of this run can be found in:
-    npm ERR!     C:\Users\integer\AppData\Roaming\npm-cache\_logs\2019-02-25T01_23_19_131Z-debug.log
-  ```
-  
-  - 단순히 npm run dev/build 명령을 입력한 경로가 문제였다.
-   
-</div>
-</details>    
-
-<details>
-<summary> 태그 선택후 등록하기 누를 때 `object references an unsaved transient instance - save the transient instance before flushing` 오류</summary>
-<div markdown="1">
-  
-  - Post 엔티티의 @ManyToMany에 영속성 전이(cascade=CascadeType.ALL) 추가
-    - JPA에서 Entity를 저장할 때 연관된 모든 Entity는 영속상태여야 한다.
-    - CascadeType.PERSIST 옵션으로 부모와 자식 Enitity를 한 번에 영속화할 수 있다.
-    - 참고
-        - [https://stackoverflow.com/questions/2302802/object-references-an-unsaved-transient-instance-save-the-transient-instance-be/10680218](https://stackoverflow.com/questions/2302802/object-references-an-unsaved-transient-instance-save-the-transient-instance-be/10680218)
-   
-</div>
-</details>    
-
-<details>
-<summary> JSON: Infinite recursion (StackOverflowError)</summary>
-<div markdown="1">
-  
-  - @JsonIgnoreProperties 사용으로 해결
-    - 참고
-        - [http://springquay.blogspot.com/2016/01/new-approach-to-solve-json-recursive.html](http://springquay.blogspot.com/2016/01/new-approach-to-solve-json-recursive.html)
-        - [https://stackoverflow.com/questions/3325387/infinite-recursion-with-jackson-json-and-hibernate-jpa-issue](https://stackoverflow.com/questions/3325387/infinite-recursion-with-jackson-json-and-hibernate-jpa-issue)
-        
-</div>
-</details>  
-    
-<details>
-<summary> H2 접속문제</summary>
-<div markdown="1">
-  
-  - H2의 JDBC URL이 jdbc:h2:~/test 으로 되어있으면 jdbc:h2:mem:testdb 으로 변경해서 접속해야 한다.
-        
-</div>
-</details> 
-    
-<details>
-<summary> 컨텐츠수정 모달창에서 태그 셀렉트박스 드랍다운이 뒤쪽에 보이는 문제</summary>
-<div markdown="1">
-  
-   - ElementUI의 Global Config에 옵션 추가하면 해결
-     - main.js 파일에 `Vue.us(ElementUI, { zIndex: 9999 });` 옵션 추가(9999 이하면 안됌)
-   - 참고
-     - [https://element.eleme.io/#/en-US/component/quickstart#global-config](https://element.eleme.io/#/en-US/component/quickstart#global-config)
-        
-</div>
-</details> 
-
-<details>
-<summary> HTTP delete Request시 개발자도구의 XHR(XMLHttpRequest )에서 delete요청이 2번씩 찍히는 이유</summary>
-<div markdown="1">
-  
-  - When you try to send a XMLHttpRequest to a different domain than the page is hosted, you are violating the same-origin policy. However, this situation became somewhat common, many technics are introduced. CORS is one of them.
-
-        In short, server that you are sending the DELETE request allows cross domain requests. In the process, there should be a **preflight** call and that is the **HTTP OPTION** call.
-
-        So, you are having two responses for the **OPTION** and **DELETE** call.
-
-        see [MDN page for CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/Access_control_CORS).
-
-    - 출처 : [https://stackoverflow.com/questions/35808655/why-do-i-get-back-2-responses-of-200-and-204-when-using-an-ajax-call-to-delete-o](https://stackoverflow.com/questions/35808655/why-do-i-get-back-2-responses-of-200-and-204-when-using-an-ajax-call-to-delete-o)
-        
-</div>
-</details> 
-
-<details>
-<summary> 이미지 파싱 시 og:image 경로가 달라서 제대로 파싱이 안되는 경우</summary>
-<div markdown="1">
-  
-  - UserAgent 설정으로 해결
-        - [https://www.javacodeexamples.com/jsoup-set-user-agent-example/760](https://www.javacodeexamples.com/jsoup-set-user-agent-example/760)
-        - [http://www.useragentstring.com/](http://www.useragentstring.com/)
-        
-</div>
-</details> 
-    
-<details>
-<summary> 구글 로그인으로 로그인한 사용자의 정보를 가져오는 방법이 스프링 2.0대 버전에서 달라진 것</summary>
-<div markdown="1">
-  
-  - 1.5대 버전에서는 Controller의 인자로 Principal을 넘기면 principal.getName(0에서 바로 꺼내서 쓸 수 있었는데, 2.0대 버전에서는 principal.getName()의 경우 principal 객체.toString()을 반환한다.
-    - 1.5대 버전에서 principal을 사용하는 경우
-    - 아래와 같이 사용했다면,
-
-    ```jsx
-    @RequestMapping("/sso/user")
-    @SuppressWarnings("unchecked")
-    public Map<String, String> user(Principal principal) {
-        if (principal != null) {
-            OAuth2Authentication oAuth2Authentication = (OAuth2Authentication) principal;
-            Authentication authentication = oAuth2Authentication.getUserAuthentication();
-            Map<String, String> details = new LinkedHashMap<>();
-            details = (Map<String, String>) authentication.getDetails();
-            logger.info("details = " + details);  // id, email, name, link etc.
-            Map<String, String> map = new LinkedHashMap<>();
-            map.put("email", details.get("email"));
-            return map;
-        }
-        return null;
-    }
-    ```
-
-    - 2.0대 버전에서는
-    - 아래와 같이 principal 객체의 내용을 꺼내 쓸 수 있다.
-
-    ```jsx
-    UsernamePasswordAuthenticationToken token =
-                    (UsernamePasswordAuthenticationToken) SecurityContextHolder
-                            .getContext().getAuthentication();
-            Map<String, Object> map = (Map<String, Object>) token.getPrincipal();
-
-            String email = String.valueOf(map.get("email"));
-            post.setMember(memberRepository.findByEmail(email));
-    ```
-        
-</div>
-</details> 
-    
-<details>
-<summary> 랭킹 동점자 처리 문제</summary>
-<div markdown="1">
-  
-  - PageRequest의 Sort부분에서 properties를 "rankPoint"를 주고 "likeCnt"를 줘서 댓글수보다 좋아요수가 우선순위 갖도록 설정.
-  - 좋아요 수도 똑같다면..........
-        
-</div>
-</details> 
     
 </br>
 
-## 6. 회고 / 느낀점
->프로젝트 개발 회고 글: https://zuminternet.github.io/ZUM-Pilot-integer/
+## 7. 회고 / 느낀점
+> 처음 만들어 본 프로젝트라 기획부터 어려움이 있었지만 수많은 구글링과 유사 프로젝트들을 참고하며 방향성을 잡고 다른 팀원들에게 피해를 주지 않기 위해 밤늦게까지 공부를 했던게 나중에 개발단계에서 아주 많은 도움이 됐던거 같다. 코드 작성할때도 우선을 작동만 되게 하자는 마인드로
+> 코드를 작성하였다. 지금은 경험이 부족해 아는것이 있어도 완벽하게 활용하거나 상황에 맞는 코드 작성이 미숙하지만 경험을 바탕으로 더 노력해서 깔끔한 코딩을 하고싶다. 그래서 지금 프로젝트도 모든 기능을 내가 다시 리팩토링 할 생각이다.
+> 이론만 배우다가 프로젝트를 하면서 배운것을 적용하니 훨씬더 많이 공부가 되는것을 느꼈다. 프로젝트를 리팩토링하면서 실력이 더욱 향상될것으로 기대하고 있다. 
